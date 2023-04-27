@@ -30,6 +30,11 @@ function orderController() {
                 Order.populate(result, { path: 'customerId' }, (err, placedOrder) => {
                     req.flash('success', 'Order placed successfully!');
                     delete req.session.cart;
+                    MongoClient.connect(process.env.MONGO_CONNECTION_URL, function (err, client) {
+                        let db = client.db('ffp');
+                        db.collection("carts").findOneAndUpdate({ userId: mongoose.Types.ObjectId(req.session.passport.user) }, { $set: { items: JSON.stringify({}), totalQty: 0, totalPrice: 0 } })
+                    });
+                    
                     //Emit
                     const eventEmitter = req.app.get('eventEmitter');
                     eventEmitter.emit('orderPlaced', placedOrder);
