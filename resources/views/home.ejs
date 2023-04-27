@@ -1,0 +1,148 @@
+<section class="hero py-16">
+    <div class="container mx-auto flex items-center justify-between">
+        <div class="w-1/2">
+            <h6 class="text-lg"><em>Are you hungry?</em></h6>
+            <h1 class="text-3xl md:text-6xl font-bold">Don't wait!!</h1><br />
+            <a href="/login" class="px-6 py-3 rounded-full text-white font-bold btn-primary">Order Now</a>
+        </div>
+        <div class="w-1/2">
+            <img src="/img/hero-samosa.png" alt="">
+        </div>
+    </div>
+</section>
+
+<% if(user) { %>
+    <section class="menu container mx-auto py-8">
+        <span class="text-xl font-bold mb-8 mr-4">All Foods</span>
+        <!-- Modal toggle -->
+        <% if(user.role==='admin' ) { %>
+            <span id="btn-modal" class="btn-normal rounded px-2 mb-8 cursor-pointer" type="button"
+                data-modal-toggle="default-modal">
+                Add product
+            </span>
+            <% } %>
+
+
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 col-gap-12 row-gap-16">
+
+                    <% foods.forEach(function(food) { %>
+                        <div class="w-full md:w-64">
+                            <% if(user.role==='admin' ) { %>
+                                <form action="/delete-product" method="post"
+                                    onSubmit="if(!confirm('Are you sure to delete this product?')){return false;}">
+                                    <input hidden name="foodId" value="<%= food._id %>" />
+                                    <button
+                                        class="bg-red-100 text-red-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300"
+                                        type="submit">&#10807; Delete</button>
+                                </form>
+                                <% } %>
+                                    <% if(food.available) { %>
+                                        <img class="h-40 mb-4 mx-auto" src="<%= food.image%>" alt="">
+                                    <% } else { %>
+                                        <img class="h-40 mb-4 mx-auto" src="<%= food.image%>" alt="" style="opacity: 0.5;">
+                                    <% } %>
+                                    <div class="text-center">
+                                        <h2 class="mb-4 text-lg">
+                                            <%= food.name%>
+                                        </h2>
+                                        <span class="size py-1 px-4 rounded-full uppercase text-xs ">
+                                            <%= food.size%>
+                                        </span>
+                                        <div class="flex items-center justify-around mt-6">
+                                            <span class="font-bold text-lg">Rs. <%= food.price%></span>
+                                            <% if(user.role === "customer") { %>
+                                            <% if(food.available) { %>
+                                                <button data-food="<%= JSON.stringify(food)%>"
+                                                    class="add-to-cart py-1 px-6 rounded-full flex items-center">
+                                                    <span>+</span>
+                                                    <span class="ml-4">Add</span>
+                                                </button>
+                                            <% } else { %>
+                                                <button disabled class="out-of-stock py-1 px-2 rounded-full flex items-center">
+                                                    <span class="ml-4">Out of stock</span>
+                                                </button>
+                                            <% }} if(user.role === "admin") { %>
+                                                <form method="post" action="/available">
+                                                    <input name="foodId" value="<%= food._id %>" hidden/>
+                                                    <button type="submit" class="add-to-cart py-1 px-2 rounded-full flex items-center">
+                                                        <span class="ml-4">
+                                                            <% if(food.available === true) { %> In stock
+                                                            <% } else { %> Out of stock :( <% } %>
+                                                        </span>
+                                                    </button>
+                                                </form>
+                                            <% } %>
+
+                                        </div>
+                                    </div>
+                        </div>
+                        <% })%>
+                </div>
+    </section>
+    <% } %>
+
+
+
+
+
+        <!-- component -->
+        <!-- This is an example component -->
+        <div class="max-w-2xl mx-auto">
+
+            <!-- Main modal -->
+            <div id="default-modal" data-modal-show="false" aria-hidden="true"
+                class="hidden overflow-x-hidden overflow-y-auto fixed h-modal md:h-full top-4 left-0 right-0 md:inset-0 z-50 justify-center items-center">
+                <div class="relative w-full max-w-2xl px-4 h-full md:h-auto">
+                    <!-- Modal content -->
+                    <div class="bg-white rounded-lg shadow relative dark:bg-gray-700">
+                        <!-- Modal header -->
+                        <div class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-600">
+                            <h3 class="text-gray-900 text-xl lg:text-2xl font-semibold dark:text-white">
+                                Add new product
+                            </h3>
+                            <button type="button"
+                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                data-modal-toggle="default-modal">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-6 space-y-6">
+                            <form method="post" action="/add-product">
+                                <input
+                                    class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500 mb-4"
+                                    id="inline-full-name" type="text" placeholder="Product Name" name="productName">
+                                <input
+                                    class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500 mb-4"
+                                    id="inline-full-name" type="text" placeholder="Image Link" name="imageLink">
+                                <input
+                                    class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500 mb-4"
+                                    id="inline-full-name" type="text" placeholder="Price" name="productPrice">
+                                <input
+                                    class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500 mb-4"
+                                    id="inline-full-name" type="text" placeholder="Size (small, medium, large)"
+                                    name="productSize">
+
+
+                                <div
+                                    class="flex space-x-2 items-center p-6 border-t border-gray-200 rounded-b dark:border-gray-600">
+                                    <button data-modal-toggle="default-modal" type="submit"
+                                        class="btn-normal rounded px-2">Add</button>
+                                    <button data-modal-toggle="default-modal" type="button"
+                                        class="btn-normal rounded px-2">Decline</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://unpkg.com/flowbite@1.4.4/dist/flowbite.js"></script>

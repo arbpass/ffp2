@@ -1,0 +1,50 @@
+<section class="status">
+    <div class="container mx-auto">
+        <div class="status-box w-full lg:w-2/3 mx-auto">
+            <div class="flex items-center justify-between mb-12">
+                <h1 class="text-xl font-bold">Track delivery status</h1>
+                <h6 class="bg-white py-1 rounded px-4 text-green-600 text-xs"> <%= order._id %> </h6>
+                <% if(!order.paymentStatus && order.status != "completed") { %>
+                    <button type="button" class="btn-normal rounded px-2" id="rzp-button1">Pay Now</button>
+                <% } %>
+                <input id="hiddenInput" type="hidden" value="<%= JSON.stringify(order) %>"/>
+            </div>
+
+            <ul>
+                <li class="status_line text-sm md:text-xl pb-16" data-status="order-placed"><span>Order Placed</span></li>
+                <li class="status_line text-sm md:text-xl pb-16" data-status="confirmed"><span>Order Confirmation</span></li>
+                <li class="status_line text-sm md:text-xl pb-16" data-status="prepared"><span>Preparation</span></li>
+                <li class="status_line text-sm md:text-xl pb-16" data-status="delivered"><span>Out For Delivery</span></li>
+                <li class="status_line text-sm md:text-xl" data-status="completed"><span>Complete</span></li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+
+  <script>
+    axios.post("/payment", {amount: "<%= order.totalPrice %>"}).then((info) => {
+    //   console.log(info);
+
+      var options = {
+        "key": "rzp_test_1fTjSvIIgBkt6M", // Enter the Key ID generated from the Dashboard
+        "amount": "<%= order.totalPrice %>",
+        "currency": "INR",
+        "name": "FFP",
+        "description": "Food Order Id: <%= order._id %>",
+        "image": "/img/logo.gif",
+        "order_id": info.data.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+        "callback_url": "/payment-completed/<%= order._id %>",
+        "theme": {
+          "color": "#ff8000"
+        }
+      };
+
+      var rzp1 = new Razorpay(options);
+      document.getElementById('rzp-button1').onclick = function (e) {
+        rzp1.open();
+        e.preventDefault();
+      }
+    })
+  </script>

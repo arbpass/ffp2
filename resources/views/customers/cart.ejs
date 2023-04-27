@@ -1,0 +1,82 @@
+<section class="cart py-16">
+    <% if(session.cart) { %>
+        <div class="order container mx-auto xl:w-1/2">
+            <div class="flex items-center border-b border-gray-300 pb-4">
+                <img src="/img/cart-black.png" alt="">
+                <h1 class="font-bold ml-4 text-2xl">Order Summary</h1>
+            </div>
+            <div class="pizza-list">
+                <% for(let food of Object.values(session.cart.items)) { %>
+                    <div class="flex items-center my-8">
+                        <img class="w-24" src="<%= food.item.image%>" alt="">
+                        <div class="ml-4 flex-1">
+                            <h1 class="cart-text">
+                                <%= food.item.name%>
+                            </h1>
+                            <span class="cart-text">
+                                <%= food.item.size%>
+                            </span>
+                        </div>
+                        <span class="flex-1 cart-text" id="<%= food.item._id %>">
+                            <%= food.qty%> Pcs
+                        </span>
+                        <span>
+                            <button data-food="<%= JSON.stringify(food.item)%>"
+                                class="remove-from-cart btn-outline-primary px-2 py-1 rounded font-bold">-</button>
+                            <button data-food="<%= JSON.stringify(food.item)%>"
+                                class="add-to-cart btn-outline-primary px-2 py-1 rounded font-bold">+</button>
+                        </span>
+                        <span class="cart-text font-bold text-lg ml-2" id="<%= food.item._id %>Price">Rs. <%=
+                                food.item.price * food.qty%></span>
+                    </div>
+                    <% } %>
+            </div>
+            <hr>
+
+            <div class="text-right py-4">
+                <div>
+                    <span class="text-lg font-bold">Total Amount:</span>
+                    <span class="amount text-2xl font-bold ml-2" id="totalPrice">Rs. <%= session.cart.totalPrice%>
+                    </span>
+                </div>
+
+                <% if(user) { %>
+                    <div>
+                        <form action="/orders" method="post" class="mt-12" id="payment-form">
+                            <input name="address" class="border border-gray-400 p-2 w-1/2 mb-4" type="text"
+                                placeholder="Address">
+                            <input name="phone" class="border border-gray-400 p-2 w-1/2 mb-4" type="text"
+                                placeholder="Phone Number">
+                                <div id="card-element"></div>
+                            <div><button class="btn-primary px-6 py-2 rounded-full text-white font-bold mt-6"
+                                    type="submit">Order Now</button></div>
+                        </form>
+                    </div>
+                    <% } else { %>
+
+                        <a class="inline-block cursor-pointer btn-primary px-6 py-2 rounded-full text-white font-bold mt-6"
+                            href="/login">Login to continue</a>
+                        <% } %>
+
+
+            </div>
+        </div>
+
+        <% } else { %>
+
+            <div class="empty-cart py-16">
+                <div class="container mx-auto text-center">
+                    <h1 class="text-3xl font-bold mb-2">Cart Empty</h1>
+                    <p class="text-gray-500 text-lg">You probably haven't ordered a pizza yet. <br>
+                        To order a pizza, go to the main page.
+                        <img class="w-2/5 mx-auto mt-12" src="/img/empty-cart.png" alt="empty-cart">
+                        <a href="/"
+                            class="inline-block px-6 py-2 rounded-full btn-primary text-white font-bold mt-12">Go
+                            back</a>
+                    </p>
+                </div>
+            </div>
+            <% } %>
+
+</section>
+
