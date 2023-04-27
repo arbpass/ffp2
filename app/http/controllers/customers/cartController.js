@@ -68,6 +68,10 @@ function cartController() {
 
             if (cart.totalQty == 1) {
                 delete req.session.cart;
+                MongoClient.connect(process.env.MONGO_CONNECTION_URL, function (err, client) {
+                    let db = client.db('ffp');
+                    db.collection("carts").findOneAndUpdate({ userId: mongoose.Types.ObjectId(req.session.passport.user) }, { $set: { items: JSON.stringify({}), totalQty: 0, totalPrice: 0 } })
+                });
                 return res.json({ totalQty: 0, totalPrice: 0 })
             }
             //Check if item doesn't exist in the cart or if item quantity is only one

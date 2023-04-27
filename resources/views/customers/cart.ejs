@@ -1,5 +1,5 @@
 <section class="cart py-16">
-    <% if(session.cart) { %>
+    <% if(session.cart && session.cart.totalPrice >0) { %>
         <div class="order container mx-auto xl:w-1/2">
             <div class="flex items-center border-b border-gray-300 pb-4">
                 <img src="/img/cart-black.png" alt="">

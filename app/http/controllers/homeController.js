@@ -8,7 +8,8 @@ function homeController() {
     return {
         async index(req, res) {
 
-            const foods = await Menu.find();
+            try {
+                const foods = await Menu.find();
             const carts = await Cart.findOne({ userId: mongoose.Types.ObjectId(req.session.passport.user) });
             if (carts) {
                 req.session.cart = {
@@ -22,6 +23,9 @@ function homeController() {
                 req.session.cart.totalPrice = await carts.totalPrice;
             }
             return res.render('home', { foods: foods });
+            } catch (error) {
+                res.redirect('/login')
+            }
 
         }
     }
